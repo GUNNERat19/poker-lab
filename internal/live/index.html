@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poker Lab · Multiplayer</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/live/live.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div class="wrap masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">♠</span> Poker Lab</div>
+    <a class="pill" href="/">Solo practice</a>
+  </div></header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="title">
+      <div>
+        <p class="eyebrow">Texas Hold’em · play chips</p>
+        <h1 id="title">Private multiplayer</h1>
+        <p class="lede" id="connection" role="status">Create a room, or open an invite link.</p>
+      </div>
+      <button class="secondary" id="create" type="button">Create room</button>
+    </section>
+    <p class="notice" id="error" role="alert" hidden></p>
+    <section id="room" hidden>
+      <div class="invite-bar">
+        <label for="invite">Invite link</label>
+        <input id="invite" type="text" readonly>
+        <button class="secondary" id="copy" type="button">Copy invite</button>
+      </div>
+      <div class="layout">
+        <section class="panel game" aria-label="Poker table">
+          <div class="game-heading">
+            <div><p class="eyebrow" id="hand">Lobby</p><h2 id="street">Waiting</h2></div>
+            <div class="stakes"><strong id="blinds"></strong> blinds <span>·</span> <strong id="buy-in"></strong> buy-in</div>
+          </div>
+          <section class="live-board" aria-label="Board and pot">
+            <div class="pot"><span>Pot</span> <strong id="pot">0</strong></div>
+            <div class="board" id="board"></div>
+            <div class="limits" id="limits">
+              <span>Current wager <strong id="current">0</strong></span>
+              <span>Street cap <strong id="ceiling">—</strong></span>
+            </div>
+          </section>
+          <div class="live-seats" id="seats"></div>
+        </section>
+        <aside class="rail">
+          <section class="panel controls" aria-labelledby="action-title">
+            <p class="eyebrow" id="identity"></p>
+            <p class="hand-strength" id="hand-strength" hidden>
+              <span id="hand-strength-label">Your hand so far</span>
+              <strong id="best-hand"></strong>
+            </p>
+            <h2 id="action-title">Waiting</h2>
+            <p class="muted" id="clock"></p>
+            <div class="action-grid" id="actions"></div>
+            <ul class="payouts" id="payouts"></ul>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

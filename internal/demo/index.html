@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poker Lab · Capped Hold’em</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap masthead">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">♠</span> Poker Lab</div>
+      <a class="pill" href="/live/">Private multiplayer</a>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Texas Hold’em · play chips</p>
+        <h1 id="page-title">The practice table</h1>
+        <p class="lede">Play each seat in turn and watch the street cap take effect.</p>
+      </div>
+      <form class="scenario-form" method="post" action="/table">
+        <input type="hidden" name="version" value="{{.Version}}">
+        <input type="hidden" name="command" value="restart">
+        <label for="scenario">Practice scenario</label>
+        <div class="scenario-controls">
+          <select id="scenario" name="scenario">
+            {{range .Choices}}<option value="{{.ID}}"{{if .Selected}} selected{{end}}>{{.Name}}</option>{{end}}
+          </select>
+          <button class="secondary" type="submit">Start scenario</button>
+        </div>
+      </form>
+    </section>
+    {{if .Notice}}<p class="notice" role="alert">{{.Notice}}</p>{{end}}
+    <div class="layout">
+      <section class="panel game" aria-label="Poker table">
+        <div class="game-heading">
+          <div><p class="eyebrow">Hand {{.Hand}}</p><h2>{{.Street}}</h2></div>
+          <div class="stakes"><strong>{{.Small}} / {{.Big}}</strong> blinds <span>·</span> <strong>{{.BuyIn}}</strong> buy-in</div>
+        </div>
+        <div class="table-stage seats-{{len .Seats}}">
+          <div class="felt" aria-hidden="true"></div>
+          <section class="center" aria-label="Board and pot">
+            <div class="pot"><span>Pot</span> <strong>{{.Pot}}</strong></div>
+            <div class="board">
+              {{range .Board}}{{if .}}{{template "card" .}}{{else}}<span class="card empty" aria-hidden="true">◇</span>{{end}}{{end}}
+            </div>
+            {{if not .Settled}}
+            <div class="limits">
+              <span>Current wager <strong>{{.Current}}</strong></span>
+              <span>Street cap <strong>{{if .Ceiling}}{{.Ceiling}}{{else}}—{{end}}</strong></span>
+            </div>
+            {{end}}
+          </section>
+          {{range .Seats}}
+          <section class="seat seat-{{.Number}}{{if .Acting}} acting{{end}}{{if .Folded}} folded{{end}}" aria-label="Seat {{.Number}}">
+            <div class="seat-title">
+              <strong>Seat {{.Number}}</strong>
+              <div class="badges">{{range .Badges}}<span>{{.}}</span>{{end}}</div>
+            </div>
+            <div class="seat-chips"><strong>{{.Stack}}</strong> chips{{if .Wager}} <span>· {{.Wager}} in</span>{{end}}</div>
+            {{if .Acting}}
+            <details>
+              <summary>Peek at hole cards</summary>
+              <div class="hole-cards">{{range .Cards}}{{template "card" .}}{{end}}</div>
+            </details>
+            {{else if .Cards}}
+            <div class="hole-cards">{{range .Cards}}{{template "card" .}}{{end}}</div>
+            {{else if .Folded}}
+            <span class="seat-status">Folded</span>
+            {{else if .Rebuy}}
+            <span class="seat-status">Busted</span>
+            {{else if and .Live (not $.Settled)}}
+            <div class="backs" aria-label="Two face-down cards"><span></span><span></span></div>
+            {{end}}
+          </section>
+          {{end}}
+        </div>
+        <div class="scenario-note"><strong>{{.Mode}}</strong><span>{{.Hint}}</span></div>
+      </section>
+      <aside class="rail" aria-label="Controls and activity">
+        <section class="panel controls" aria-labelledby="action-title">
+          {{if .Settled}}
+          <p class="eyebrow">Payouts</p><h2 id="action-title">Hand complete</h2>
+          <ul class="payouts">{{range .Payouts}}<li>{{.}}</li>{{end}}</ul>
+          <form class="next-actions" method="post" action="/table">
+            <input type="hidden" name="version" value="{{.Version}}">
+            {{if .CanDeal}}<button class="primary" type="submit" name="command" value="next">Deal next hand</button>{{else}}<p>At least two funded seats are needed to deal again.</p>{{end}}
+          </form>
+          {{range .Seats}}{{if .Rebuy}}
+          <form class="rebuy" method="post" action="/table">
+            <input type="hidden" name="version" value="{{$.Version}}">
+            <input type="hidden" name="seat" value="{{.Number}}">
+            <button class="secondary" type="submit" name="command" value="rebuy">Rebuy Seat {{.Number}} · {{$.BuyIn}} chips</button>
+          </form>
+          {{end}}{{end}}
+          {{else}}
+          <p class="eyebrow">Action on</p><h2 id="action-title">Seat {{.Actor}}</h2>
+          <p class="muted">Choose this seat’s next move.</p>
+          <div class="action-grid">
+            {{range .Actions}}
+            <form method="post" action="/table">
+              <input type="hidden" name="version" value="{{$.Version}}">
+              <input type="hidden" name="command" value="act">
+              <input type="hidden" name="kind" value="{{.Kind}}">
+              <input type="hidden" name="target" value="{{.Target}}">
+              <button class="action {{.Kind}}" type="submit">{{.Label}}{{if .Detail}}<small>{{.Detail}}</small>{{end}}</button>
+            </form>
+            {{end}}
+          </div>
+          {{end}}
+        </section>
+        <section class="panel log" aria-labelledby="log-title">
+          <div class="log-heading"><h2 id="log-title">Hand history</h2><span>Latest first</span></div>
+          <ol>{{range .History}}<li>{{.}}</li>{{end}}</ol>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <footer class="wrap">One browser controls all seats. Chips are for practice.</footer>
+</body>
+</html>
+
+{{define "card"}}<span class="card{{if .Red}} red{{end}}" role="img" aria-label="{{.Label}}"><b aria-hidden="true">{{.Rank}}</b><span aria-hidden="true">{{.Suit}}</span></span>{{end}}

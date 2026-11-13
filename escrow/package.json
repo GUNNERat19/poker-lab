@@ -1,0 +1,13 @@
+{
+  "name": "poker-lab-escrow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "node scripts/demo.mjs"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "5.4.0",
+    "viem": "^2.40.0"
+  }
+}
