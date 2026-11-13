@@ -44,7 +44,10 @@ The escrow's nine Foundry tests passed, including 256 fuzz cases for balance con
 
 The integrated React, Go, and Anvil walkthrough used two browser profiles and Anvil test wallets. It verified wallet binding, a blocked next deal while a signature was missing, a fully signed bundle saved in both profiles, a stale exit replaced by checkpoint 2, and both withdrawals. The PostgreSQL recovery test replayed the signatures and save receipts. Base Sepolia setup is in the [user guide](USER_GUIDE.md#repeat-on-base-sepolia). The public run still needs funded testnet wallets.
 
+The standalone private-dealing prototype is in `internal/privatedeal`. It uses Kyber's ElGamal shuffle proofs and proofs for decryption shares. The local simulator ran a 52-card deal in about 168 ms for three players and 339 ms for six players, with 106,821 and 213,642 shuffle-proof bytes respectively. These are local measurements from one run per size. Tests cover duplicate cards, folded-card visibility at showdown, tampered proofs, replay, and missing contributions before and during reveals. Run it with `go run ./cmd/poker-private-deal`.
+
 ## Next steps, in order
 
 1. Run the integrated missing-signer and stale-checkpoint scenarios on Base Sepolia with funded testnet wallets.
-2. Prototype a verifiable private deal and measure what happens when a participant withholds a shuffle or reveal. Resolve how to handle an unsigned result before using escrow with real stakes.
+2. Define and test the missing-share policy for play chips. The prototype requires every share and aborts on a missing contribution. A live table needs authenticated transport, independent player processes, transcript agreement, deadlines, and an explicit policy for a hand that aborts after betting. Decide whether to keep unanimity or use a reviewed recovery protocol with explicit collusion assumptions.
+3. Integrate the private deal into a play-chip table only after testing those boundaries across independent clients. Separately resolve how to enforce an unsigned hand result before using escrow with real stakes.

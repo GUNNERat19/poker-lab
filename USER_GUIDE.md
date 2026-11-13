@@ -160,3 +160,16 @@ signatures=$(jq -r '.checkpoint.signatures | "[" + join(",") + "]"' "$file")
 cast send "$POKER_ESCROW_ADDRESS" 'startExitWithCheckpoint((uint256,uint256[],bytes32),bytes[])' \
   "$checkpoint" "$signatures" --rpc-url "$POKER_ESCROW_RPC_URL" --account poker-alice
 ```
+
+## Try the private-dealing prototype
+
+Run from the project folder:
+
+```sh
+go run ./cmd/poker-private-deal -seats 3
+go run ./cmd/poker-private-deal -seats 6
+go run ./cmd/poker-private-deal -withhold shuffle
+go run ./cmd/poker-private-deal -withhold reveal
+```
+
+The first two commands simulate a 52-card deal and report proof size and elapsed time. Each simulated player shuffles the encrypted deck and submits a proof. Hole cards open for their owners, community cards open for everyone, and the simulated showdown opens the two remaining hands. The last two commands simulate a participant withholding a shuffle or a board share and show where the deal aborts. The simulation runs inside one process. The multiplayer table uses its existing software dealer.
