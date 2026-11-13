@@ -2,6 +2,7 @@
 
 **Recommendation:** Build an invite-only browser table with non-redeemable play chips, a rotating dealer button, fixed blinds, and between-hand rebuys. Keep the Hold’em rules engine independent of the server, the deck provider, and the chip ledger. Prototype decentralized dealing and settlement with test assets after the table works. The first playable version has a trusted operator; the eventual decentralization target is that no one operator can see everyone’s cards, dictate payouts, or block withdrawals indefinitely.
 
+
 ## Table and hand
 
 | Decision | First playable version |
